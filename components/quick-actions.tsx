@@ -13,22 +13,24 @@ export function QuickActions() {
 
   return (
     <>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 sm:space-x-2">
         <Button
-          className="bg-primary text-primary-foreground hover:scale-105 transition-transform duration-200"
+          className="bg-primary text-primary-foreground hover:scale-105 transition-transform duration-200 text-xs sm:text-sm"
           onClick={() => setAddDealOpen(true)}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Deal
+          <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">Add Deal</span>
+          <span className="xs:hidden">Add</span>
         </Button>
 
         <Button
           variant="outline"
-          className="hover:scale-105 transition-transform duration-200 bg-transparent"
+          className="hover:scale-105 transition-transform duration-200 bg-transparent text-xs sm:text-sm"
           onClick={() => setImportLeadsOpen(true)}
         >
-          <Mail className="h-4 w-4 mr-2" />
-          Import Leads
+          <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Import Leads</span>
+          <span className="sm:hidden">Import</span>
         </Button>
 
         <DropdownMenu>
@@ -36,9 +38,10 @@ export function QuickActions() {
             <Button
               variant="outline"
               size="sm"
-              className="hover:scale-105 transition-transform duration-200 bg-transparent"
+              className="hover:scale-105 transition-transform duration-200 bg-transparent h-8 w-8 sm:h-9 sm:w-auto sm:px-3"
             >
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline sm:ml-2">More</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
