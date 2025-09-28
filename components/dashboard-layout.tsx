@@ -30,7 +30,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <BarChart3 className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="text-lg font-semibold text-foreground hidden sm:block">
-                  VentureFlow
+                  MatchaAI
                 </span>
               </a>
             </Button>

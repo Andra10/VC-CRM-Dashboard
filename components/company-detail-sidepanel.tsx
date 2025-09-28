@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -8,7 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent } from "@/components/ui/card"
-import { X, Users, Building2, Target, Globe, Linkedin, Twitter, Mail, Phone, Plus } from "lucide-react"
+import { X, Users, Building2, Target, Globe, Linkedin, Twitter, Mail, Phone, Plus, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, FileText } from "lucide-react"
+import { generateValidationFlags } from "./validation-engine"
 import { ExpandableText } from "./expandable-text"
 import { SocialButton } from "./social-button"
 import { ValidationFlag } from "./validation-flag"
@@ -86,93 +87,24 @@ export function CompanyDetailSidepanel({ isOpen, onClose, company }: CompanyDeta
     }
   }, [isOpen, onClose])
 
+  const [expandedFlags, setExpandedFlags] = useState(new Set<number>())
+
+  const toggleFlag = (index: number) => {
+    const newExpanded = new Set(expandedFlags)
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index)
+    } else {
+      newExpanded.add(index)
+    }
+    setExpandedFlags(newExpanded)
+  }
+
   if (!company) {
     console.log("[v0] No company data provided to side panel")
     return null
   }
 
-  // Dynamic validation flags based on company data
-  const getValidationFlags = () => {
-    const flags = []
-    
-    // Check for red flags based on company data
-    if (company.flags && company.flags.red > 0) {
-      // Email domain validation
-      if (company.source === "Cold Outreach") {
-        flags.push({
-          type: "red" as const,
-          title: "Cold Outreach Source",
-          description: "Company sourced through cold outreach - requires additional verification",
-          details: "This company was contacted through cold outreach methods. Additional verification of company legitimacy and founder credentials is recommended before proceeding.",
-        })
-      }
-      
-      // Founder information validation
-      if (!company.founders || company.founders.length < 2) {
-        flags.push({
-          type: "red" as const,
-          title: "Incomplete Founder Information",
-          description: "Limited founder information available",
-          details: "Only one founder identified. Most successful startups have multiple co-founders. Additional research into the founding team is recommended.",
-        })
-      }
-      
-      // Social media validation
-      if (!company.socialNetworks?.linkedin) {
-        flags.push({
-          type: "red" as const,
-          title: "Missing LinkedIn Profile",
-          description: "No LinkedIn company page found",
-          details: "The company does not have a verified LinkedIn presence, which may indicate a newer company or potential legitimacy concerns.",
-        })
-      }
-    }
-    
-    // Check for green flags
-    if (company.flags && company.flags.green > 0) {
-      // Company validation
-      if (company.socialNetworks?.linkedin && company.socialNetworks?.website) {
-        flags.push({
-          type: "green" as const,
-          title: "Company Validated",
-          description: "Company verified across multiple sources",
-          details: "The company has been validated across LinkedIn, official website, and other professional networks. All information appears consistent and legitimate.",
-        })
-      }
-      
-      // Founder validation
-      if (company.founders && company.founders.length >= 2) {
-        flags.push({
-          type: "green" as const,
-          title: "Complete Founding Team",
-          description: "Multiple founders identified with contact information",
-          details: "The company has a complete founding team with verified contact information. This indicates a more established and legitimate operation.",
-        })
-      }
-      
-      // Industry validation
-      if (company.industry && company.category) {
-        flags.push({
-          type: "green" as const,
-          title: "Clear Market Position",
-          description: "Well-defined industry and category classification",
-          details: "The company has a clear market position with defined industry and category. This indicates good business planning and market understanding.",
-        })
-      }
-    }
-    
-    // If no flags exist, show a neutral validation state
-    if (flags.length === 0) {
-      flags.push({
-        type: "green" as const,
-        title: "Validation Pending",
-        description: "Company information is being reviewed",
-        details: "The company information is currently under review. No issues have been identified yet, but validation is still in progress.",
-      })
-    }
-    
-    return flags
-  }
+  const getValidationFlags = () => generateValidationFlags(company)
 
   const validationFlags = getValidationFlags()
 
@@ -554,30 +486,179 @@ export function CompanyDetailSidepanel({ isOpen, onClose, company }: CompanyDeta
                     </div>
                   </motion.section>
 
-                  {/* Validation Flags */}
+                  {/* Investment Analysis Report */}
                   <Separator />
                   <motion.section
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.3 }}
                   >
-                    <h2 className="font-semibold mb-4 text-base">Validation Flags</h2>
-                    <div className="space-y-3">
-                      {validationFlags.map((flag, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.65 + index * 0.1, duration: 0.3 }}
-                        >
-                          <ValidationFlag {...flag} />
-                        </motion.div>
-                      ))}
+                    {/* Header with Overall Score */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                          <Target className="h-5 w-5 mr-2" />
+                          Investment Analysis Report
+                        </h2>
+                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          validationFlags.filter(f => f.type === 'green').length > validationFlags.filter(f => f.type === 'red').length 
+                            ? 'bg-green-100 text-green-600' 
+                            : validationFlags.filter(f => f.type === 'red').length > validationFlags.filter(f => f.type === 'green').length
+                            ? 'bg-red-100 text-red-600'
+                            : 'bg-yellow-100 text-yellow-600'
+                        }`}>
+                          {validationFlags.filter(f => f.type === 'green').length > validationFlags.filter(f => f.type === 'red').length 
+                            ? 'Good' 
+                            : validationFlags.filter(f => f.type === 'red').length > validationFlags.filter(f => f.type === 'green').length
+                            ? 'Needs Review'
+                            : 'Moderate'
+                          }
+                        </div>
+                      </div>
+                      
+                      {/* Quick Stats */}
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <AlertTriangle className="w-4 h-4 text-red-500" />
+                          <span>{validationFlags.filter(f => f.type === 'red').length} Issues</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <span>{validationFlags.filter(f => f.type === 'green').length} Validated</span>
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Validation Flags */}
+                    <div className="space-y-3">
+                      {validationFlags.map((flag, index) => {
+                        const isExpanded = expandedFlags.has(index);
+                        const IconComponent = flag.type === 'red' ? AlertTriangle : flag.type === 'green' ? CheckCircle : FileText;
+                        
+                        const getStatusColor = (type: string) => {
+    switch (type) {
+      case 'red': return 'border-red-200 bg-red-50';
+      case 'green': return 'border-green-200 bg-green-50';
+      case 'neutral': return 'border-blue-200 bg-blue-50';
+      default: return 'border-gray-200 bg-gray-50';
+    }
+  };
+
+                        const getIconColor = (type: string) => {
+    switch (type) {
+      case 'red': return 'text-red-500';
+      case 'green': return 'text-green-500';
+      case 'neutral': return 'text-blue-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+                        const getSeverityBadge = (severity: string, type: string) => {
+                          const colors: Record<string, Record<string, string>> = {
+      red: {
+        high: 'bg-red-100 text-red-800 border-red-200',
+        medium: 'bg-orange-100 text-orange-800 border-orange-200',
+        low: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      },
+      green: {
+        high: 'bg-green-100 text-green-800 border-green-200',
+        medium: 'bg-blue-100 text-blue-800 border-blue-200',
+        low: 'bg-gray-100 text-gray-800 border-gray-200'
+      },
+      neutral: {
+                              high: 'bg-blue-100 text-blue-800 border-blue-200',
+                              medium: 'bg-blue-100 text-blue-800 border-blue-200',
+                              low: 'bg-blue-100 text-blue-800 border-blue-200'
+      }
+    };
+
+    return colors[type]?.[severity] || 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  return (
+                          <motion.div
+              key={index}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.65 + index * 0.1, duration: 0.3 }}
+              className={`border rounded-lg transition-all duration-200 hover:shadow-sm ${getStatusColor(flag.type)}`}
+            >
+              <div
+                className="p-4 cursor-pointer"
+                onClick={() => toggleFlag(index)}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <IconComponent className={`w-5 h-5 mt-0.5 flex-shrink-0 ${getIconColor(flag.type)}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{flag.title}</h3>
+                        {flag.severity && (
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getSeverityBadge(flag.severity, flag.type)}`}>
+                            {flag.severity}
+                          </span>
+                        )}
+                        {flag.confidenceScore && (
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full border bg-gray-100 text-gray-800">
+                            Confidence: {flag.confidenceScore}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">{flag.description}</p>
+                    </div>
+                  </div>
+                  <button className="ml-2 p-1 hover:bg-white/50 rounded">
+                    {isExpanded ? (
+                      <ChevronUp className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              {/* Expanded Details with Bullet Points */}
+              {isExpanded && (
+                <div className="px-4 pb-4">
+                  <div className="border-t pt-3 mt-1">
+                    <ul className="space-y-2">
+                      {Array.isArray(flag.details) ? (
+                        flag.details.map((detail, detailIndex) => (
+                          <li key={detailIndex} className="flex items-start gap-3">
+                            <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                            <span className="text-sm text-gray-700 leading-relaxed">{detail}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="flex items-start gap-3">
+                          <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="text-sm text-gray-700 leading-relaxed">{flag.details}</span>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+                          </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Action Buttons */}
+                    {validationFlags.some(f => f.type === 'red') && (
+        <div className="mt-6 flex gap-3">
+          <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Request Additional Info
+          </button>
+          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            Mark as Reviewed
+          </button>
+        </div>
+      )}
                   </motion.section>
                 </div>
               </ScrollArea>
-            </div>
+    </div>
           </motion.div>
         </>
       )}

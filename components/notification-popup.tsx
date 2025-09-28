@@ -9,12 +9,13 @@ interface NotificationPopupProps {
   onClose: () => void
 }
 
+
 const recentActivities = [
   {
     id: 1,
     type: "deal_update",
-    title: "TechFlow moved to Due Diligence",
-    description: "Deal stage updated by Sarah Chen",
+    title: "Hot deal alert: HealthTech Inc seeking lead investor",
+    description: "Competitive round closing in 48 hours - schedule ASAP",
     time: "2 minutes ago",
     icon: TrendingUp,
     color: "text-blue-600",
@@ -22,8 +23,8 @@ const recentActivities = [
   {
     id: 2,
     type: "new_lead",
-    title: "New lead: GreenEnergy Solutions",
-    description: "Added from LinkedIn outreach",
+    title: "Warm introduction available: QuantumCompute",
+    description: "Mutual connection willing to intro - 72% investment probability",
     time: "15 minutes ago",
     icon: Building2,
     color: "text-green-600",
@@ -31,8 +32,8 @@ const recentActivities = [
   {
     id: 3,
     type: "meeting",
-    title: "Meeting scheduled with HealthTech Inc",
-    description: "Pitch meeting set for tomorrow 2 PM",
+    title: "Strategic connection created: GreenEnergy ↔ Tesla",
+    description: "Partnership opportunity identified - reach out immediately",
     time: "1 hour ago",
     icon: Clock,
     color: "text-orange-600",
@@ -40,12 +41,12 @@ const recentActivities = [
   {
     id: 4,
     type: "team_update",
-    title: "John added notes to DataCorp deal",
-    description: "Updated competitive analysis section",
+    title: "Portfolio connection: DataCorp CEO introduced to Stripe CFO",
+    description: "High-value introduction made - follow up on integration talks",
     time: "3 hours ago",
     icon: User,
     color: "text-purple-600",
-  },
+  }
 ]
 
 export function NotificationPopup({ isOpen, onClose }: NotificationPopupProps) {
