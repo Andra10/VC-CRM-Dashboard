@@ -29,7 +29,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-lg bg-primary flex items-center justify-center">
                   <BarChart3 className="h-3 w-3 sm:h-5 sm:w-5 text-primary-foreground" />
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-foreground hidden xs:block">
+                <span className="text-base sm:text-lg font-semibold text-foreground">
                   MatchaAI
                 </span>
               </a>

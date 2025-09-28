@@ -19,8 +19,8 @@ export function QuickActions() {
           onClick={() => setAddDealOpen(true)}
         >
           <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-          <span className="hidden xs:inline">Add Deal</span>
-          <span className="xs:hidden">Add</span>
+          <span className="hidden sm:inline">Add Deal</span>
+          <span className="sm:hidden">Add</span>
         </Button>
 
         <Button
