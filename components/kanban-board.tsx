@@ -217,8 +217,14 @@ export function KanbanBoard() {
   const scrollToColumn = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       // Responsive column width based on screen size
-      const isSmallScreen = window.innerWidth < 640
-      const columnWidth = isSmallScreen ? 288 : 320 // sm:w-72 = 288px, w-80 = 320px
+      const isMobile = window.innerWidth < 640
+      const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024
+      const isDesktop = window.innerWidth >= 1024
+      
+      let columnWidth = 320 // Default desktop
+      if (isMobile) columnWidth = 280
+      else if (isTablet) columnWidth = 300
+      
       const currentScroll = scrollContainerRef.current.scrollLeft
       const targetScroll = direction === 'left' 
         ? currentScroll - columnWidth 
@@ -292,7 +298,7 @@ export function KanbanBoard() {
                 scrollBehavior: 'smooth'
               }}
             >
-              <div className="flex gap-6 p-6" style={{ width: 'max-content' }}>
+              <div className="flex gap-3 sm:gap-4 md:gap-6 p-3 sm:p-4 md:p-6" style={{ width: 'max-content' }}>
                 {stages.map((stage) => {
                   const stats = getStageStats(stage.id)
                   const stageDeals = getDealsByStage(stage.id)
@@ -300,20 +306,53 @@ export function KanbanBoard() {
                   return (
                     <motion.div
                       key={stage.id}
-                      className="w-80 sm:w-72 md:w-80 lg:w-80 xl:w-80 flex-shrink-0 flex flex-col snap-start"
+                      className="w-72 sm:w-80 md:w-80 lg:w-80 xl:w-80 flex-shrink-0 flex flex-col snap-start"
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, stage.id)}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                  {/* Single Line Stage Header with Title, Issues, and Validations */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between h-12 w-full">
-                      {/* Left side - Title and Count */}
+                  {/* Responsive Stage Header */}
+                  <div className="mb-4 sm:mb-6">
+                    {/* Mobile: Stacked layout */}
+                    <div className="block sm:hidden">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="relative flex items-center justify-center">
+                          <motion.span
+                            className={`h-2 w-2 rounded-full ${stage.pingColor} opacity-75`}
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [0.75, 0, 0.75],
+                            }}
+                            transition={{
+                              duration: 2.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        </div>
+                        <h3 className="text-sm font-semibold text-foreground">{stage.title}</h3>
+                        <Badge variant="secondary" className="text-xs font-medium px-2 py-1">
+                          {stats.count}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 px-2 py-1 bg-destructive/10 rounded-md h-6 border border-destructive/20">
+                          <AlertTriangle className="h-3 w-3 text-destructive" />
+                          <span className="text-xs font-medium text-destructive">{stats.totalRed}</span>
+                        </div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/10 rounded-md h-6 border border-emerald-500/20">
+                          <CheckCircle className="h-3 w-3 text-emerald-600" />
+                          <span className="text-xs font-medium text-emerald-600">{stats.totalGreen}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Single line layout */}
+                    <div className="hidden sm:flex items-center justify-between h-12 w-full">
                       <div className="flex items-center space-x-3 flex-1 min-w-0">
                         <div className="relative flex items-center justify-center">
-                          {/* Dynamic Animated Ping - Centered with Title */}
                           <motion.span
                             className={`h-2 w-2 rounded-full ${stage.pingColor} opacity-75`}
                             animate={{
@@ -333,7 +372,6 @@ export function KanbanBoard() {
                         </Badge>
                       </div>
                       
-                      {/* Right side - Issues and Validations */}
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <div className="flex items-center gap-1 px-2 py-1 bg-destructive/10 rounded-md h-6 border border-destructive/20">
                           <AlertTriangle className="h-3 w-3 text-destructive flex-shrink-0" />
@@ -374,7 +412,7 @@ export function KanbanBoard() {
                             }}
                           >
                             <Card
-                              className="cursor-pointer hover:shadow-md transition-all duration-200 bg-card border-border group w-full h-64 hover:border-border/50"
+                              className="cursor-pointer hover:shadow-md transition-all duration-200 bg-card border-border group w-full h-56 sm:h-60 md:h-64 hover:border-border/50"
                               draggable
                               onDragStart={() => handleDragStart(deal.id)}
                               onClick={(e) => {
@@ -386,11 +424,11 @@ export function KanbanBoard() {
                             >
                               <CardContent className="p-4 h-full flex flex-col">
                                 {/* Company Header */}
-                                <div className="flex items-center justify-between mb-4">
-                                  <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                    <Avatar className="h-8 w-8 flex-shrink-0">
+                                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                  <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                                    <Avatar className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0">
                                       <AvatarImage src={deal.avatar || "/placeholder.svg"} />
-                                      <AvatarFallback className="text-sm">
+                                      <AvatarFallback className="text-xs sm:text-sm">
                                         {deal.founder
                                           .split(" ")
                                           .map((n) => n[0])
@@ -399,27 +437,27 @@ export function KanbanBoard() {
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
                                       <h4 
-                                        className="text-base font-semibold text-foreground leading-tight"
+                                        className="text-sm sm:text-base font-semibold text-foreground leading-tight"
                                         title={deal.company}
                                       >
                                         {deal.company}
                                       </h4>
-                                      <p className="text-sm text-muted-foreground leading-tight mt-0.5">{deal.founder}</p>
+                                      <p className="text-xs sm:text-sm text-muted-foreground leading-tight mt-0.5">{deal.founder}</p>
                                     </div>
                                   </div>
                                   
-                                  <div className="flex-shrink-0 ml-2">
+                                  <div className="flex-shrink-0 ml-1 sm:ml-2">
                                     <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-8 w-8 p-0 hover:bg-accent"
+                                        className="h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-accent"
                                       >
-                                          <MoreHorizontal className="h-4 w-4" />
+                                          <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
                                         </Button>
                                       </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end" className="w-48">
+                                      <DropdownMenuContent align="end" className="w-40 sm:w-48">
                                         <DropdownMenuItem onClick={() => handleCompanyDetails(deal)}>
                                           View Details
                                         </DropdownMenuItem>
@@ -437,46 +475,47 @@ export function KanbanBoard() {
                                   </div>
                                 </div>
 
-                                {/* Description - Fixed Height */}
-                                <div className="h-16 mb-4">
-                                  <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed h-full overflow-hidden">
+                                {/* Description - Responsive Height */}
+                                <div className="h-12 sm:h-14 md:h-16 mb-3 sm:mb-4">
+                                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 leading-relaxed h-full overflow-hidden">
                                     {deal.pitch}
                                   </p>
                                 </div>
 
-                                {/* Funding & Source - Fixed Height */}
-                                <div className="h-8 flex items-center justify-between mb-4">
-                                  <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                      <DollarSign className="h-4 w-4" />
+                                {/* Funding & Source - Responsive Height */}
+                                <div className="h-6 sm:h-8 flex items-center justify-between mb-3 sm:mb-4">
+                                  <div className="flex items-center gap-1 sm:gap-2">
+                                    <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                                      <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
                                       <span className="font-semibold text-foreground">{deal.value}</span>
                                     </div>
-                                    <Badge variant="outline" className="text-sm">
+                                    <Badge variant="outline" className="text-xs sm:text-sm">
                                       {deal.source}
                                     </Badge>
                                   </div>
                                 </div>
 
-                                {/* Bottom Row - Fixed Height */}
-                                <div className="h-6 flex items-center justify-between mt-auto">
-                                  <div className="flex items-center gap-3">
+                                {/* Bottom Row - Responsive Height */}
+                                <div className="h-5 sm:h-6 flex items-center justify-between mt-auto">
+                                  <div className="flex items-center gap-2 sm:gap-3">
                                     {redFlags.length > 0 && (
                                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <AlertTriangle className="h-3 w-3 text-destructive" />
+                                        <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-destructive" />
                                         <span className="font-medium">{redFlags.length}</span>
                                       </div>
                                     )}
                                     {greenFlags.length > 0 && (
                                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <CheckCircle className="h-3 w-3 text-emerald-600" />
+                                        <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-emerald-600" />
                                         <span className="font-medium">{greenFlags.length}</span>
                                       </div>
                                     )}
                                   </div>
                                   
                                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>{deal.lastUpdate}</span>
+                                    <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                    <span className="hidden sm:inline">{deal.lastUpdate}</span>
+                                    <span className="sm:hidden">{deal.lastUpdate.split(' ')[0]}</span>
                                   </div>
                                 </div>
                               </CardContent>

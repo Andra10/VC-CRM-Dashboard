@@ -132,7 +132,7 @@ export function CompanyDetailSidepanel({ isOpen, onClose, company }: CompanyDeta
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-background border-l shadow-2xl z-50"
+            className="fixed right-0 top-0 h-full w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-background border-l shadow-2xl z-50"
             role="dialog"
             aria-modal="true"
             aria-labelledby="company-detail-title"
@@ -143,15 +143,15 @@ export function CompanyDetailSidepanel({ isOpen, onClose, company }: CompanyDeta
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
-                className="flex items-center justify-between p-6 border-b bg-muted/30 flex-shrink-0"
+                className="flex items-center justify-between p-4 sm:p-6 border-b bg-muted/30 flex-shrink-0"
               >
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                   >
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                       <AvatarImage src={company.avatar || "/placeholder.svg"} />
                       <AvatarFallback>
                         {company.company
@@ -161,81 +161,99 @@ export function CompanyDetailSidepanel({ isOpen, onClose, company }: CompanyDeta
                       </AvatarFallback>
                     </Avatar>
                   </motion.div>
-                  <div>
-                    <h1 id="company-detail-title" className="text-xl font-semibold">
+                  <div className="flex-1 min-w-0">
+                    <h1 id="company-detail-title" className="text-lg sm:text-xl font-semibold truncate">
                       {company.company}
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {company.value} • {company.source}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  {/* Quick Actions */}
-                  {company.url && (
+                <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+                  {/* Mobile: Only close button */}
+                  <div className="block sm:hidden">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        console.log("[v0] Closing side panel via close button")
+                        onClose()
+                      }}
+                      className="h-8 w-8 p-0"
+                      aria-label="Close panel"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Desktop: All actions */}
+                  <div className="hidden sm:flex items-center space-x-2">
+                    {company.url && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3, duration: 0.2 }}
+                      >
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={company.url} target="_blank" rel="noopener noreferrer">
+                            <Globe className="h-4 w-4 mr-2" />
+                            Website
+                          </a>
+                        </Button>
+                      </motion.div>
+                    )}
+
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3, duration: 0.2 }}
+                      transition={{ delay: 0.35, duration: 0.2 }}
                     >
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={company.url} target="_blank" rel="noopener noreferrer">
-                          <Globe className="h-4 w-4 mr-2" />
-                          Website
-                        </a>
+                      <Button variant="outline" size="sm">
+                        <Mail className="h-4 w-4 mr-2" />
+                        Email
                       </Button>
                     </motion.div>
-                  )}
 
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.35, duration: 0.2 }}
-                  >
-                    <Button variant="outline" size="sm">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.4, duration: 0.2 }}
+                    >
+                      <Button size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Deal
+                      </Button>
+                    </motion.div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        console.log("[v0] Closing side panel via close button")
+                        onClose()
+                      }}
+                      className="h-8 w-8 p-0"
+                      aria-label="Close panel"
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4, duration: 0.2 }}
-                  >
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Deal
-                    </Button>
-                  </motion.div>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      console.log("[v0] Closing side panel via close button")
-                      onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                    aria-label="Close panel"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  </div>
                 </div>
               </motion.div>
 
               {/* Content */}
               <ScrollArea className="flex-1 overflow-hidden">
-                <div className="p-6 space-y-8 pb-8">
+                <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 pb-6 sm:pb-8">
                   {/* Pitch Summary */}
                   <motion.section
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.3 }}
                   >
-                    <h2 className="font-semibold mb-3 text-base">Pitch Summary</h2>
-                    <ExpandableText text={company.pitch} maxLength={200} />
+                    <h2 className="font-semibold mb-3 text-sm sm:text-base">Pitch Summary</h2>
+                    <ExpandableText text={company.pitch} maxLength={150} />
                   </motion.section>
 
                   <Separator />

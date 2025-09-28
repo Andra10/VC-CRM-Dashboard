@@ -183,11 +183,11 @@ export function RecentActivity() {
   return (
     <>
       <Card className="bg-card border-border">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
+        <CardHeader className="pb-3 sm:pb-6">
+          <CardTitle className="text-base sm:text-lg font-semibold">Recent Activity</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-3 sm:p-6 pt-0">
+          <div className="space-y-3 sm:space-y-4">
             {activities.map((activity, index) => {
               const company = mockCompanyData[activity.company as keyof typeof mockCompanyData]
               const flags = company ? generateValidationFlags(company) : []
@@ -196,17 +196,17 @@ export function RecentActivity() {
               return (
               <div
                 key={activity.id}
-                className="flex items-start space-x-3 p-2 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
+                className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                    <activity.icon className="h-4 w-4 text-muted-foreground" />
+                  <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <activity.icon className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="h-5 w-5 hover:scale-110 transition-transform duration-200">
+                  <div className="flex items-center space-x-1 sm:space-x-2">
+                    <Avatar className="h-4 w-4 sm:h-5 sm:w-5 hover:scale-110 transition-transform duration-200">
                       <AvatarImage src={activity.avatar || "/placeholder.svg"} />
                       <AvatarFallback className="text-xs">
                         {activity.user
@@ -215,9 +215,9 @@ export function RecentActivity() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-foreground">{activity.user}</span>
+                    <span className="text-xs sm:text-sm font-medium text-foreground truncate">{activity.user}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                     {activity.title} for{" "}
                     <button
                       onClick={() => handleCompanyClick(activity.company)}
@@ -228,18 +228,18 @@ export function RecentActivity() {
                     </button>
                   </p>
                   {/* Inline synced flag counts */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                  <div className="flex items-center gap-2 sm:gap-4 text-xs text-muted-foreground mt-1">
                     <div className="flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3 text-destructive" />
+                      <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-destructive" />
                       <span>{redCount} Issues</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-success" />
+                      <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-success" />
                       <span>{greenCount} Validated</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1 mt-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground" />
                     <span className="text-xs text-muted-foreground">{activity.time}</span>
                   </div>
                 </div>
