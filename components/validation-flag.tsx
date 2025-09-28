@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Card, CardContent } from "@/components/ui/card"
-import { AlertTriangle, CheckCircle, ChevronDown, Mail } from "lucide-react"
+import { AlertTriangle, CheckCircle, ChevronDown, Mail, FileText } from "lucide-react"
 
 interface ValidationFlagProps {
-  type: "red" | "green"
+  type: "red" | "green" | "neutral"
   title: string
   description: string
   details?: string
+  confidenceScore?: number
   mailPreview?: {
     subject: string
     sender: string
@@ -19,13 +20,17 @@ interface ValidationFlagProps {
   }
 }
 
-export function ValidationFlag({ type, title, description, details, mailPreview }: ValidationFlagProps) {
+export function ValidationFlag({ type, title, description, details, confidenceScore, mailPreview }: ValidationFlagProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const icon = type === "red" ? AlertTriangle : CheckCircle
+  const icon = type === "red" ? AlertTriangle : type === "green" ? CheckCircle : FileText
   const IconComponent = icon
   const colorClass =
-    type === "red" ? "text-destructive bg-destructive-bg border-destructive/20" : "text-success bg-success-bg border-success/20"
+    type === "red" 
+      ? "text-destructive bg-destructive-bg border-destructive/20" 
+      : type === "green" 
+      ? "text-success bg-success-bg border-success/20"
+      : "text-primary bg-primary-bg border-primary/20"
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
@@ -39,9 +44,16 @@ export function ValidationFlag({ type, title, description, details, mailPreview 
                 aria-label={`${isExpanded ? "Collapse" : "Expand"} ${title} details`}
               >
                 <div className="flex items-start space-x-3 text-left">
-                  <IconComponent className={`h-4 w-4 mt-0.5 ${type === "red" ? "text-destructive" : "text-success"}`} />
+                  <IconComponent className={`h-4 w-4 mt-0.5 ${type === "red" ? "text-destructive" : type === "green" ? "text-success" : "text-primary"}`} />
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{title}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm">{title}</p>
+                      {confidenceScore && (
+                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-muted text-muted-foreground">
+                          {confidenceScore}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-muted-foreground mt-1">{description}</p>
                   </div>
                 </div>
